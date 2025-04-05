@@ -94,6 +94,11 @@ bool lose = false;
 bool win = false;
 bool pause = false;
 float lives = LIVES;
+bool faded = false;
+bool start_fading = false;
+bool played_win = false;
+float fade_in_timer = 0.0f;
+
 GLuint font_texture_id;
 
 AppStatus g_app_status = RUNNING;
@@ -115,7 +120,7 @@ void switch_to_scene(Scene *scene)
 void initialise()
 {
     SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
-    g_display_window = SDL_CreateWindow("Hello, Special Effects!",
+    g_display_window = SDL_CreateWindow("Hello, Rise of AI!",
                                       SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
                                       WINDOW_WIDTH, WINDOW_HEIGHT,
                                       SDL_WINDOW_OPENGL);
@@ -178,6 +183,7 @@ void initialise()
     
     g_effects = new Effects(g_projection_matrix, g_view_matrix);
 //    g_effects->start(FADEIN);
+    
 }
 
 void process_input()
@@ -262,7 +268,9 @@ void update()
         
         while (delta_time >= FIXED_TIMESTEP) {
             g_current_scene->update(FIXED_TIMESTEP);
-            g_effects->update(FIXED_TIMESTEP);
+            if (win && start_fading &&!faded){
+                g_effects->update(FIXED_TIMESTEP);
+            }
             
             
             g_is_colliding_bottom = g_current_scene->get_state().player->get_collided_bottom();
@@ -315,15 +323,29 @@ void update()
 
         if (g_current_scene == g_levelC && glm::distance(g_current_scene->get_state().player->get_position(), win_pos) <= 1.0f) {
             win = true;
-            Mix_PlayChannel(-1,  g_current_scene->get_state().win_sfx, 0);
+            if(!played_win){
+                Mix_PlayChannel(-1,  g_current_scene->get_state().win_sfx, 0);
+                played_win=true;
+            }
         }
         
         if (lose == true){
             switch_to_scene(g_lose);
         }
         
-        if (win == true){
-            switch_to_scene(g_win);
+        if (win && !faded){
+            if (!start_fading){
+                g_effects->start(FADEOUT);
+                start_fading=true;
+            }
+            else{
+                fade_in_timer += delta_time * 1.0f;
+                if(fade_in_timer >= 0.5f){
+                    switch_to_scene(g_win);
+                    faded=true;
+                    start_fading=false;
+                }
+            }
         }
         
         g_view_matrix = glm::mat4(1.0f);
@@ -336,7 +358,12 @@ void update()
             }
         }
         else{
-            g_view_matrix = glm::translate(glm::mat4(1.0f), glm::vec3(-5, 3.75, 0));
+            if(faded){
+                g_view_matrix = glm::translate(glm::mat4(1.0f), glm::vec3(-5, 3.75, 0));
+            }
+            else{
+                g_view_matrix = glm::translate(g_view_matrix, glm::vec3(-g_current_scene->get_state().player->get_position()));
+            }
         }
         
     }
@@ -351,7 +378,9 @@ void render()
     // ————— RENDERING THE SCENE (i.e. map, character, enemies...) ————— //
     g_current_scene->render(&g_shader_program);
        
-    g_effects->render();
+    if(win && !faded && start_fading){
+        g_effects->render();
+    }
     
     SDL_GL_SwapWindow(g_display_window);
 }

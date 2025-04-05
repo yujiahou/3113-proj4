@@ -13,9 +13,9 @@ unsigned int LEVELB_DATA[] =
     120, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     120, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     120, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    120, 0, 0, 0, 0, 0, 0, 0, 0, 0, 36, 0, 0, 0,
-    120, 0, 0, 0, 0, 0, 0, 0, 0, 17, 38, 19, 0, 0,
-    120, 18, 19, 0, 36, 0, 0, 17, 38, 38, 38, 38, 18, 19,
+    120, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    120, 0, 0, 0, 0, 0, 0, 0, 0, 17, 18, 19, 0, 0,
+    120, 18, 19, 0, 36, 0, 0, 17, 18, 38, 38, 38, 18, 19,
     120, 38, 39, 0, 56, 0, 0, 37, 38, 38, 38, 38, 38, 39
 };
 
@@ -30,15 +30,13 @@ LevelB::~LevelB()
 
 void LevelB::initialise()
 {
+    glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
     m_game_state.next_scene_id = -1;
     
     GLuint map_texture_id = Utility::load_texture("assets/tilemap_packed.png");//Created/distributed by Kenney (www.kenney.nl)
     m_game_state.map = new Map(LEVEL_WIDTH, LEVEL_HEIGHT, LEVELB_DATA, map_texture_id, 1.0f, 20, 9);
     
-    // Code from main.cpp's initialise()
 
-    
-    // Existing
     int player_walking_animation[4][4] =
     {
         { 8, 9, 10, 11 },

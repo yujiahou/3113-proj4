@@ -1,6 +1,6 @@
 #include "Effects.hpp"
 
-Effects::Effects(glm::mat4 projection_matrix, glm::mat4 view_matrix) : m_current_effect(NONE), m_alpha(1.0f), m_view_offset(glm::vec3(0.0f))
+Effects::Effects(glm::mat4 projection_matrix, glm::mat4 view_matrix) : m_current_effect(NONE), m_alpha(0.0f), m_view_offset(glm::vec3(0.0f))
 {
     // Non textured Shader
     m_shader_program.load("shaders/vertex.glsl", "shaders/fragment.glsl");
@@ -36,8 +36,8 @@ void Effects::start(EffectType effect_type)
     switch (m_current_effect)
     {
         case NONE:   break;
-        case FADEIN:
-            m_alpha     = 1.0f;
+        case FADEOUT:
+            m_alpha     = 0.0f;
             break;
     }
 }
@@ -48,9 +48,8 @@ void Effects::update(float delta_time)
    switch (m_current_effect)
    {
        case NONE:   break;
-       case FADEIN:
-           m_alpha -= delta_time * 1.0f;
-            if (m_alpha <= 0) m_current_effect = NONE;
+       case FADEOUT:
+           if (m_alpha < 1.0f) m_alpha += delta_time;
            break;
    }
 }
@@ -62,7 +61,7 @@ void Effects::render()
     switch (m_current_effect)
     {
         case NONE:   break;
-        case FADEIN:
+        case FADEOUT:
             model_matrix = glm::scale(model_matrix, glm::vec3(10.0f, 10.0f, 0.0f));
 
             this->m_shader_program.set_model_matrix(model_matrix);

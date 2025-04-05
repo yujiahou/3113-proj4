@@ -14,7 +14,7 @@
 #include "glm/gtc/matrix_transform.hpp"
 #include "ShaderProgram.h"
 
-enum EffectType { NONE, FADEIN };
+enum EffectType { NONE, FADEOUT };
 
 class Effects {
 private:

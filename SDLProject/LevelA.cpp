@@ -32,14 +32,13 @@ LevelA::~LevelA()
 
 void LevelA::initialise()
 {
+    glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
 //    font_texture_idA = Utility::load_texture(FONT_FILEPATH);
     m_game_state.next_scene_id = -1;
     
     GLuint map_texture_id = Utility::load_texture("assets/tilemap_packed.png");//Created/distributed by Kenney (www.kenney.nl)
     m_game_state.map = new Map(LEVEL_WIDTH, LEVEL_HEIGHT, LEVELA_DATA, map_texture_id, 1.0f, 20, 9);
     
-    // Code from main.cpp's initialise()
-    // Existing
     int player_walking_animation[4][4] =
     {
         { 8, 9, 10, 11 },

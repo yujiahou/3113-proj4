@@ -17,6 +17,7 @@ void Menu::initialise()
     
     font_texture_id = Utility::load_texture(FONT_FILEPATH);
 
+    glClearColor(0.8f, 0.5f, 0.4f, 1.0f);
 }
 
 void Menu::update(float delta_time)
